@@ -1,0 +1,71 @@
+#include <iostream>
+#include <vector>
+#include <sstream>
+
+int main() {
+    const int MAX_WEIGHT = 150; // Maximum weight allowed
+    const int WEIGHT_RANGES[] = { 50, 70, 90, 110 }; // Weight ranges for histogram
+    const int NUM_RANGES = sizeof(WEIGHT_RANGES) / sizeof(WEIGHT_RANGES[0]) + 1;
+
+    std::vector<int> weightRanges(NUM_RANGES, 0);
+    int totalCustomers = 0;
+    int lowestWeight = MAX_WEIGHT;
+    int highestWeight = 0;
+
+    std::cout << "Enter the body weight of each customer (up to 149) visiting Flexi-Fit (one visit per day).\n"
+        << "Enter '-1' to finish input.\n";
+
+    int weight;
+    while (true) {
+        std::cout << "Enter weight (or -1 to finish): ";
+        std::cin >> weight;
+
+        if (weight == -1 || weight >= MAX_WEIGHT) {
+            break;
+        }
+
+        if (weight >= 0 && weight < MAX_WEIGHT) {
+            totalCustomers++;
+            if (weight < lowestWeight) {
+                lowestWeight = weight;
+            }
+            if (weight > highestWeight) {
+                highestWeight = weight;
+            }
+            int rangeIndex = 0;
+            for (int i = 0; i < NUM_RANGES - 1; ++i) {
+                if (weight >= WEIGHT_RANGES[i]) {
+                    rangeIndex = i + 1;
+                }
+            }
+            weightRanges[rangeIndex]++;
+        }
+        else {
+            std::cout << "Invalid weight. Weight should be between 0 and " << (MAX_WEIGHT - 1) << ".\n";
+            std::cin.clear();
+            std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
+        }
+    }
+
+    std::cout << "\nHistogram of Body Weights:\n";
+    for (int i = 0; i < NUM_RANGES; ++i) {
+        int lowerLimit = (i == 0) ? 0 : WEIGHT_RANGES[i - 1];
+        int upperLimit = (i == NUM_RANGES - 1) ? MAX_WEIGHT - 1 : WEIGHT_RANGES[i] - 1;
+
+        std::cout << lowerLimit << "-" << upperLimit << ":\t";
+        for (int j = 0; j < weightRanges[i]; ++j) {
+            std::cout << "$";
+        }
+        std::cout << "\n";
+    }
+
+    std::stringstream lowestWeightStr, highestWeightStr;
+    lowestWeightStr << lowestWeight;
+    highestWeightStr << highestWeight;
+
+    std::cout << "\nTotal Customers: " << totalCustomers << "\n";
+    std::cout << "Lowest Body Weight: " << ((lowestWeight == MAX_WEIGHT) ? "N/A" : lowestWeightStr.str()) << "\n";
+    std::cout << "Highest Body Weight: " << ((highestWeight == 0) ? "N/A" : highestWeightStr.str()) << "\n";
+
+    return 0;
+}
